@@ -1,0 +1,122 @@
+@startuml EcoImpactTracker Database Schema
+
+' Base Entity
+abstract class BaseEntity {
+    +createdAt: LocalDateTime
+    +updatedAt: LocalDateTime
+}
+
+' Main Entities
+class Product {
+    +id: Long
+    +name: String
+    +description: String
+    +barcode: String
+    +weightKg: Decimal(10,3)
+    +volumeL: Decimal(10,3)
+}
+
+class Brand {
+    +id: Long
+    +name: String
+    +description: String
+    +website: String
+    +sustainabilityRating: Decimal(3,2)
+}
+
+class Category {
+    +id: Long
+    +name: String
+    +description: String
+}
+
+class Material {
+    +id: Long
+    +name: String
+    +description: String
+    +recyclabilityPercentage: Decimal(5,2)
+    +biodegradabilityPercentage: Decimal(5,2)
+}
+
+class ManufacturingLocation {
+    +id: Long
+    +name: String
+    +country: String
+    +city: String
+    +address: String
+    +latitude: Decimal(10,8)
+    +longitude: Decimal(11,8)
+}
+
+class Certification {
+    +id: Long
+    +name: String
+    +description: String
+    +issuingOrganization: String
+}
+
+class User {
+    +id: Long
+    +username: String
+    +email: String
+}
+
+class EnvironmentalImpactMetrics {
+    +id: Long
+    +carbonFootprintKg: Decimal(10,3)
+    +waterUsageL: Decimal(10,3)
+    +wasteGeneratedKg: Decimal(10,3)
+    +recyclabilityPercentage: Decimal(5,2)
+    +biodegradabilityPercentage: Decimal(5,2)
+}
+
+class UserProductReview {
+    +id: Long
+    +rating: Decimal(2,1)
+    +reviewText: String
+    +sustainabilityRating: Decimal(2,1)
+}
+
+' Junction Tables
+class ProductMaterial {
+    +percentageUsed: Decimal(5,2)
+}
+
+class ProductManufacturing {
+    +manufacturingPercentage: Decimal(5,2)
+}
+
+class ProductCertification {
+    +certificationDate: LocalDate
+    +expiryDate: LocalDate
+}
+
+' Relationships
+Product "1" -- "1" EnvironmentalImpactMetrics : has
+Product "1" -- "*" UserProductReview : receives
+Product "*" -- "1" Brand : belongs to
+Product "*" -- "1" Category : belongs to
+Product "1" -- "*" ProductMaterial : contains
+Product "1" -- "*" ProductManufacturing : manufactured at
+Product "1" -- "*" ProductCertification : has
+
+Material "1" -- "*" ProductMaterial : used in
+ManufacturingLocation "1" -- "*" ProductManufacturing : produces
+Certification "1" -- "*" ProductCertification : certifies
+User "1" -- "*" UserProductReview : writes
+
+' Inheritance
+BaseEntity <|-- Product
+BaseEntity <|-- Brand
+BaseEntity <|-- Category
+BaseEntity <|-- Material
+BaseEntity <|-- ManufacturingLocation
+BaseEntity <|-- Certification
+BaseEntity <|-- User
+BaseEntity <|-- EnvironmentalImpactMetrics
+BaseEntity <|-- UserProductReview
+BaseEntity <|-- ProductMaterial
+BaseEntity <|-- ProductManufacturing
+BaseEntity <|-- ProductCertification
+
+@enduml 
